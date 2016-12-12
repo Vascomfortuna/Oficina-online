@@ -1,9 +1,0 @@
-TODO
-
-Criar o Mockups da App- DONE
-
-Criar a base de dados SQLite (deve permitir guardar a palavra-passe na base de dados)
-
-Estudar como aplicar a segurança
-
-e o resto;
