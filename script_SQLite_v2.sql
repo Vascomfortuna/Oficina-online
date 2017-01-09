@@ -9,3 +9,11 @@ CREATE TABLE abastecimentos (
     Sync INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE TABLE "bd_anomalias" (
+    IdAnomalia INTEGER CONSTRAINT pk_IdAnomalia PRIMARY KEY, 
+    Anomalia TEXT NOT NULL, 
+    Description TEXT ,
+    IdVeiculo INTEGER NOT NULL ,
+    IdMecanico INTEGER NOT NULL,
+    Sync INTEGER NOT NULL DEFAULT 0
+)

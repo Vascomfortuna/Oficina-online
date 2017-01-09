@@ -1,4 +1,4 @@
--- v.4
+-- v.4.1
 
 drop table bd_abastecimentos;
 drop table bd_reparacoes_ocorrencias;
@@ -35,7 +35,7 @@ CREATE TABLE BDA_1010985.BD_ANOMALIAS
     ANOMALIA   VARCHAR2 (255 BYTE) NOT NULL ,
     DESCRICAO CLOB ,
     VEICULOS_IDVEICULO   NUMBER NOT NULL ,
-    MECANICOS_IDMECANICO NUMBER NOT NULL ,
+    MECANICOS_IDMECANICO NUMBER ,
     DATA                 DATE NOT NULL
   );
 
