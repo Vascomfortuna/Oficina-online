@@ -1,4 +1,4 @@
--- v.3.0 (11.01.2017)
+-- v.4.0 (16.01.2017)
 
 DROP TABLE IF EXISTS "bd_anomalias";
 CREATE TABLE "bd_abastecimentos" (
@@ -40,3 +40,29 @@ CREATE TABLE "bd_mecanicos" (
     Email TEXT NOT NULL,
     Versao INTEGER
 );
+
+DROP TABLE IF EXISTS "bd_reparacoes_tipos";
+CREATE TABLE "bd_reparacoes_tipos" (
+    IdReparacaoTipo INTEGER CONSTRAINT pk_IdReparacaoTipo PRIMARY KEY, 
+    Reparacao TEXT NOT NULL,    
+    Descricao TEXT NOT NULL,
+    Versao INTEGER
+);
+
+DROP TABLE IF EXISTS "bd_ocorrencias";
+CREATE TABLE "bd_ocorrencias" (
+    IdOcorrecia INTEGER CONSTRAINT pk_IdOcorrecia PRIMARY KEY, 
+    DataMarcacao TEXT ,    
+    DataInicio TEXT ,    
+    DataEstadoAtual TEXT NOT NULL,
+    KM INTEGER ,
+    PrecoTotal TEXT ,
+    ObsCliente TEXT,
+    ClientesIdClientes INTEGER NOT NULL ,
+    MecanicosIdMecanicos INTEGER ,
+    VeículosIdVeiculo INTEGER NOT NULL,
+    OcorrenciasIdOcorrenciasEstado INTEGER NOT NULL,
+    ReparacoesIdRepOcorrencia INTEGER NOT NULL
+);
+
+
