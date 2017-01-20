@@ -23,6 +23,8 @@ drop sequence SEQ_IDVEICULO;
 
 
 --triggers
+-- já são eliminados pelo cascade
+/*
 drop trigger T_IDCLIENTE;
 drop trigger T_IDABASTECIMENTO;
 drop trigger T_IDANOMALIA;
@@ -31,6 +33,7 @@ drop trigger T_IDOCORRENCIA;
 drop trigger T_IDOCORRENCIAESTADO;
 drop trigger T_IDREPARACAOTIPO;
 drop trigger T_IDVEICULO;
+*/
 -- drop trigger T_INSERE_DATA_ABASTECIMENTO;
 -- drop trigger T_INSERE_DATA_ANOMALIA;
 
@@ -500,5 +503,4 @@ VALUES
 -- CREATE OR REPLACE TRIGGER REPARACOES_OCORRENCIAS_REPARAC BEFORE
 --  INSERT ON BD_REPARACOES_OCORRENCIAS FOR EACH ROW WHEN (NEW.ID_REP_OCORRENCIAS IS NULL) BEGIN :NEW.ID_REP_OCORRENCIAS := reparacoes_ocorrencias_reparac.NEXTVAL;
 -- END;
-
 
