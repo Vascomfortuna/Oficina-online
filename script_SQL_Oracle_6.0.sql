@@ -1,15 +1,15 @@
--- v.5.0.0(18.01.2017)
+-- v.6.0.0(20.01.2017)
 
 --tables
-drop table bd_abastecimentos;
-drop table bd_anomalias;
-drop table bd_reparacoes_ocorrencias;
-drop table bd_ocorrencias;
-drop table bd_reparacoes_tipos;
-drop table bd_mecanicos;
-drop table bd_veiculos;
-drop table bd_clientes;
-drop table bd_ocorrencias_estados;
+drop table bd_abastecimentos cascade constraints;
+drop table bd_anomalias cascade constraints;
+drop table bd_reparacoes_ocorrencias cascade constraints;
+drop table bd_ocorrencias cascade constraints;
+drop table bd_reparacoes_tipos cascade constraints;
+drop table bd_mecanicos cascade constraints;
+drop table bd_veiculos cascade constraints;
+drop table bd_clientes cascade constraints;
+drop table bd_ocorrencias_estados cascade constraints;
 
 --sequences
 drop sequence SEQ_IDCLIENTE;
@@ -23,15 +23,16 @@ drop sequence SEQ_IDVEICULO;
 
 
 --triggers
-drop trigger t_IDCLIENTE;
-drop trigger t_IDABASTECIMENTO;
-drop trigger t_IDANOMALIA;
-drop trigger t_IDMECANICO;
-drop trigger t_IDOCORRENCIA;
-drop trigger t_IDOCORRENCIAESTADO;
-drop trigger t_IDREPARACAOTIPO;
-drop trigger t_IDVEICULO;
-
+drop trigger T_IDCLIENTE;
+drop trigger T_IDABASTECIMENTO;
+drop trigger T_IDANOMALIA;
+drop trigger T_IDMECANICO;
+drop trigger T_IDOCORRENCIA;
+drop trigger T_IDOCORRENCIAESTADO;
+drop trigger T_IDREPARACAOTIPO;
+drop trigger T_IDVEICULO;
+-- drop trigger T_INSERE_DATA_ABASTECIMENTO;
+-- drop trigger T_INSERE_DATA_ANOMALIA;
 
 CREATE TABLE BD_ABASTECIMENTOS
   (
@@ -39,7 +40,7 @@ CREATE TABLE BD_ABASTECIMENTOS
     KM                 NUMBER NOT NULL ,
     LITROS             NUMBER NOT NULL ,
     VEICULOS_IDVEICULO NUMBER NOT NULL ,
-    DATA_ABASTECIMENTO DATE NOT NULL
+    DATA_ABASTECIMENTO DATE default sysdate
   );
 
 CREATE UNIQUE INDEX BD_ABASTECIMENTOS_PK ON BD_ABASTECIMENTOS
@@ -57,7 +58,7 @@ CREATE TABLE BD_ANOMALIAS
     DESCRICAO CLOB ,
     VEICULOS_IDVEICULO   NUMBER NOT NULL ,
     MECANICOS_IDMECANICO NUMBER ,
-    DATA_ANOMALIA DATE NOT NULL
+    DATA_ANOMALIA DATE default sysdate
   );
 
 CREATE UNIQUE INDEX BD_ANOMALIAS_PK ON BD_ANOMALIAS
@@ -70,7 +71,7 @@ ALTER TABLE BD_ANOMALIAS ADD CONSTRAINT BD_ANOMALIAS_PK PRIMARY KEY ( IDANOMALIA
 CREATE TABLE BD_CLIENTES
   (
     IDCLIENTE   NUMBER NOT NULL ,
-    PRIMIRONOME VARCHAR2 (50 BYTE) NOT NULL ,
+    PRIMEIRONOME VARCHAR2 (50 BYTE) NOT NULL ,
     ULTIMONOME  VARCHAR2 (50 BYTE) NOT NULL ,
     TELEMOVEL   VARCHAR2 (15 BYTE) ,
     EMAIL       VARCHAR2 (50 BYTE) NOT NULL,
@@ -88,7 +89,7 @@ ALTER TABLE BD_CLIENTES ADD CONSTRAINT CLIENTES_PK PRIMARY KEY ( IDCLIENTE ) USI
 CREATE TABLE BD_MECANICOS
   (
     IDMECANICO   NUMBER NOT NULL ,
-    PRIMIRONOME VARCHAR2 (50 BYTE) NOT NULL ,
+    PRIMEIRONOME VARCHAR2 (50 BYTE) NOT NULL ,
     ULTIMONOME  VARCHAR2 (50 BYTE) NOT NULL ,
     TELEMOVEL   VARCHAR2 (15 BYTE) ,
     EMAIL       VARCHAR2 (50 BYTE) NOT NULL,
@@ -107,8 +108,8 @@ CREATE TABLE BD_OCORRENCIAS
   (
     IDOCORRENCIA    NUMBER NOT NULL ,
     DATAMARCACAO    DATE ,
-    DATAINICIO      DATE ,
-    DATAESTADOATUAL DATE NOT NULL ,
+    DATAINICIO      DATE default sysdate,
+    DATAESTADOATUAL DATE , --NULL AGORA, depois NOT NULL, porque depois e necessario por isto automatico
     KM              NUMBER ,
     PRECOTOTAL      NUMBER (10,2) ,
     OBSERVACOES_CLIENTE CLOB ,
@@ -143,8 +144,8 @@ CREATE TABLE BD_REPARACOES_OCORRENCIAS
   (
     ID_OCORRENCIAS      NUMBER NOT NULL,
     ID_REPARACAO_TIPO   NUMBER NOT NULL,
-    QUANTIDADE                          NUMBER NOT NULL ,
-    PRECO_UNITARIO                      NUMBER (10,2) NOT NULL
+    QUANTIDADE          NUMBER NOT NULL ,
+    PRECO_UNITARIO      NUMBER (10,2) NOT NULL
   );
 ALTER TABLE BD_REPARACOES_OCORRENCIAS ADD CONSTRAINT PK_REPARACOES_OCORRENCIAS PRIMARY KEY ( ID_OCORRENCIAS, ID_REPARACAO_TIPO ) ;
 
@@ -252,7 +253,7 @@ ALTER TABLE BD_VEICULOS ADD CONSTRAINT VEICULOS_CLIENTES_FK FOREIGN KEY ( CLIENT
   
 -- Triggers
 
-  create or replace TRIGGER t_idCliente
+  create or replace TRIGGER T_IDCLIENTE
   BEFORE INSERT ON BD_CLIENTES
   FOR EACH ROW
 BEGIN
@@ -262,7 +263,7 @@ BEGIN
 END;
 /
   
-create or replace TRIGGER t_idAbastecimento
+create or replace TRIGGER T_IDABASTECIMENTO
   BEFORE INSERT ON BD_ABASTECIMENTOS
   FOR EACH ROW
 BEGIN
@@ -272,7 +273,7 @@ BEGIN
 END;
 /
 
-create or replace TRIGGER t_idAnomalia
+create or replace TRIGGER T_IDANOMALIA
   BEFORE INSERT ON BD_ANOMALIAS
   FOR EACH ROW
 BEGIN
@@ -282,7 +283,7 @@ BEGIN
 END;
 /
 
-create or replace TRIGGER t_idMecanico
+create or replace TRIGGER T_IDMECANICO
   BEFORE INSERT ON BD_MECANICOS
   FOR EACH ROW
 BEGIN
@@ -292,7 +293,7 @@ BEGIN
 END;
 /
 
-create or replace TRIGGER t_idOcorrencia
+create or replace TRIGGER T_IDOCORRENCIA
   BEFORE INSERT ON BD_OCORRENCIAS
   FOR EACH ROW
 BEGIN
@@ -302,7 +303,7 @@ BEGIN
 END; 
 /
 
-create or replace TRIGGER t_idOcorrenciaEstado
+create or replace TRIGGER T_IDOCORRENCIAESTADO
   BEFORE INSERT ON BD_OCORRENCIAS_ESTADOS
   FOR EACH ROW
 BEGIN
@@ -312,7 +313,7 @@ BEGIN
 END;
 /
 
-create or replace TRIGGER t_idReparacaoTipo
+create or replace TRIGGER T_IDREPARACAOTIPO
   BEFORE INSERT ON BD_REPARACOES_TIPOS
   FOR EACH ROW
 BEGIN
@@ -322,7 +323,7 @@ BEGIN
 END;
 /
 
-create or replace TRIGGER t_idVeiculo
+create or replace TRIGGER T_IDVEICULO
   BEFORE INSERT ON BD_VEICULOS
   FOR EACH ROW
 BEGIN
@@ -331,6 +332,167 @@ BEGIN
     FROM dual;
 END;
 /
+
+/*
+
+
+
+CREATE OR REPLACE TRIGGER T_PRECO_TOTAL
+BEFORE INSERT ON BD_OCORRENCIAS
+FOR EACH ROW
+
+IF  IS NOT NULL then
+
+   ...
+
+END IF;
+*/
+
+
+
+/*
+create or replace TRIGGER T_INSERE_DATA_ABASTECIMENTO
+  BEFORE INSERT ON BD_ABASTECIMENTOS
+  FOR EACH ROW
+BEGIN
+  SELECT sysdate
+  INTO :new.DATA_ABASTECIMENTO
+  from dual;
+END;
+/
+
+create or replace TRIGGER T_INSERE_DATA_ANOMALIA
+  BEFORE INSERT ON BD_ANOMALIAS
+  FOR EACH ROW
+BEGIN
+  SELECT sysdate
+  INTO :new.DATA_ANOMALIA
+  from dual;
+END;
+/
+*/
+
+
+--******************* data teste*******************
+
+INSERT INTO BD_CLIENTES
+(PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL, PASSWORD)
+VALUES
+('João', 'Delgado', 961236819, 'joaoTeste@gmail.com','apenas teste');
+
+INSERT INTO BD_CLIENTES
+(PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL, PASSWORD)
+VALUES
+('Sandro', 'Marques', 961125622, 'sandroTeste@gmail.com','apenas teste');
+
+INSERT INTO BD_CLIENTES
+(PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL, PASSWORD)
+VALUES
+('Vasco', 'Fortuna', 961531819, 'vascoTeste@gmail.com','apenas teste');
+
+
+INSERT INTO BD_VEICULOS
+(IDMODELO, CLIENTES_IDCLIENTE, MARCA, MODELO)
+VALUES
+(1, 1, 'Ferrari', '360 Modena');
+
+INSERT INTO BD_VEICULOS
+(IDMODELO, CLIENTES_IDCLIENTE, MARCA, MODELO)
+VALUES
+(2, 2, 'Lamborguini', 'Aventadoro');
+
+INSERT INTO BD_VEICULOS
+(IDMODELO, CLIENTES_IDCLIENTE, MARCA, MODELO)
+VALUES
+(3, 3, 'Bentley', 'Continental');
+
+
+INSERT INTO BD_ABASTECIMENTOS
+(KM, LITROS, VEICULOS_IDVEICULO)
+VALUES
+(123809, 45, 1);
+
+INSERT INTO BD_ABASTECIMENTOS
+(KM, LITROS, VEICULOS_IDVEICULO)
+VALUES
+(98345, 60, 2);
+
+INSERT INTO BD_ABASTECIMENTOS
+(KM, LITROS, VEICULOS_IDVEICULO)
+VALUES
+(68123, 30, 3);
+
+
+-- questao das versoes, nao esto ua percebe o porque nos mecanicos
+INSERT INTO BD_MECANICOS
+(PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL, PASSWORD,VERSAO)
+VALUES
+('Ricardo', 'Reis', 961678354, 'reisTeste@oficina.pt','blabla', 1);
+
+INSERT INTO BD_MECANICOS
+(PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL,PASSWORD, VERSAO)
+VALUES
+('Alberto', 'Caeiro', 961687654, 'caeiroTeste@oficina.pt','blabla', 1);
+
+INSERT INTO BD_MECANICOS
+(PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL,PASSWORD, VERSAO)
+VALUES
+('Alvaro', 'Campos', '961678354', 'camposTeste@oficina.pt','blabla', 1);
+
+
+INSERT INTO BD_ANOMALIAS
+(ANOMALIA, DESCRICAO, VEICULOS_IDVEICULO, MECANICOS_IDMECANICO)
+VALUES
+('Barulho', 'Barulho na direcao do lado direito', 1,2);
+
+INSERT INTO BD_ANOMALIAS
+(ANOMALIA, DESCRICAO, VEICULOS_IDVEICULO, MECANICOS_IDMECANICO)
+VALUES
+('Pintura danificada', 'Tejadilho do veiculo a perder cor', 3,1);
+
+
+INSERT INTO BD_OCORRENCIAS_ESTADOS
+(ESTADO)
+VALUES
+('EM APROVAÇÂO');
+
+INSERT INTO BD_OCORRENCIAS_ESTADOS
+(ESTADO)
+VALUES
+('PRONTO');
+
+INSERT INTO BD_OCORRENCIAS_ESTADOS
+(ESTADO)
+VALUES
+('EM ARRANJO');
+
+
+INSERT INTO BD_REPARACOES_TIPOS
+(REPARACAO, DESCRICAO, VERSAO)
+VALUES
+('Mudança Óleo', 'Mudança do oleo do motor do veículo', 1);
+
+INSERT INTO BD_REPARACOES_TIPOS
+(REPARACAO, DESCRICAO, VERSAO)
+VALUES
+('Mudança Pneus', 'Mudança de pneus', 1);
+
+INSERT INTO BD_REPARACOES_TIPOS
+(REPARACAO, DESCRICAO, VERSAO)
+VALUES
+('Revisao de inspeção', 'Cumprir X checkList- TODO', 1);
+
+
+INSERT INTO BD_OCORRENCIAS
+(KM, OBSERVACOES_CLIENTE, OBSERVACOES_MECANICO, CLIENTES_IDCLIENTE,MECANICOS_IDMECANICO,VEICULOS_IDVEICULO,OCORRENCIAS_IDOCORRENCIAESTADO)
+VALUES
+(152352, 'teste observacao cliente', 'observacoes mecanicos',1, 2, 1, 1);
+
+INSERT INTO BD_REPARACOES_OCORRENCIAS
+(ID_OCORRENCIAS, ID_REPARACAO_TIPO, QUANTIDADE, PRECO_UNITARIO)
+VALUES
+(1,1,3,5.5);
+
 
 
 -- CREATE SEQUENCE reparacoes_ocorrencias_reparac START WITH 1 NOCACHE ORDER ;
