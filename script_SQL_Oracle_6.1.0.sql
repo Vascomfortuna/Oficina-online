@@ -1,6 +1,7 @@
--- v.6.0.0(20.01.2017)
+-- v.6.1.0(30.01.2017)
+-- adicionado um modelo de restricao, CHECK_ESTADO, limita o estado a 4 estados;
 
---tables
+-- tables
 drop table bd_abastecimentos cascade constraints;
 drop table bd_anomalias cascade constraints;
 drop table bd_reparacoes_ocorrencias cascade constraints;
@@ -11,7 +12,7 @@ drop table bd_veiculos cascade constraints;
 drop table bd_clientes cascade constraints;
 drop table bd_ocorrencias_estados cascade constraints;
 
---sequences
+-- sequences
 drop sequence SEQ_IDCLIENTE;
 drop sequence SEQ_IDABASTECIMENTO;
 drop sequence SEQ_IDANOMALIA;
@@ -22,7 +23,7 @@ drop sequence SEQ_IDREPARACAOTIPO;
 drop sequence SEQ_IDVEICULO;
 
 
---triggers
+-- triggers
 -- já são eliminados pelo cascade
 /*
 drop trigger T_IDCLIENTE;
@@ -140,6 +141,7 @@ CREATE UNIQUE INDEX OCORRENCIAS_ESTADOS_PK ON BD_OCORRENCIAS_ESTADOS
     IDOCORRENCIAESTADO ASC
   );
 ALTER TABLE BD_OCORRENCIAS_ESTADOS ADD CONSTRAINT OCORRENCIAS_ESTADOS_PK PRIMARY KEY ( IDOCORRENCIAESTADO ) USING INDEX OCORRENCIAS_ESTADOS_PK ;
+ALTER TABLE BD_OCORRENCIAS_ESTADOS ADD CONSTRAINT CHECK_ESTADO CHECK (ESTADO IN('Marcada', 'Efetuada', 'Pendente', 'Cancelada'));
 
 
 
@@ -171,8 +173,10 @@ ALTER TABLE BD_REPARACOES_TIPOS ADD CONSTRAINT REPARACOES_TIPOS_PK PRIMARY KEY (
 CREATE TABLE BD_VEICULOS
   (
     IDVEICULO          NUMBER NOT NULL ,
+    IDMARCA            NUMBER NOT NULL ,
     IDMODELO           NUMBER NOT NULL ,
     CLIENTES_IDCLIENTE NUMBER NOT NULL ,
+    MATRICULA          VARCHAR2 (20 BYTE) NOT NULL  ,
     MARCA              VARCHAR2 (50 BYTE) NOT NULL ,
     MODELO             VARCHAR2 (50 BYTE) NOT NULL
   );
@@ -181,6 +185,7 @@ CREATE UNIQUE INDEX VEICULOS_PK ON BD_VEICULOS
     IDVEICULO ASC
   );
 ALTER TABLE BD_VEICULOS ADD CONSTRAINT VEICULOS_PK PRIMARY KEY ( IDVEICULO ) USING INDEX VEICULOS_PK ;
+ALTER TABLE BD_VEICULOS ADD (CONSTRAINT U_MATRICULA UNIQUE(MATRICULA));
 
 
 ALTER TABLE BD_ABASTECIMENTOS ADD CONSTRAINT ABASTECIMENTOS_VEICULOS_FK FOREIGN KEY ( VEICULOS_IDVEICULO ) REFERENCES BD_VEICULOS ( IDVEICULO ) NOT DEFERRABLE ;
@@ -204,7 +209,7 @@ ALTER TABLE BD_OCORRENCIAS ADD CONSTRAINT OCORRENCIAS_VEICULOS_FK FOREIGN KEY ( 
 
 ALTER TABLE BD_VEICULOS ADD CONSTRAINT VEICULOS_CLIENTES_FK FOREIGN KEY ( CLIENTES_IDCLIENTE ) REFERENCES BD_CLIENTES ( IDCLIENTE ) NOT DEFERRABLE ;
 
---Sequences
+-- Sequences
   
   CREATE SEQUENCE seq_idCliente 
   START WITH 1
@@ -376,7 +381,7 @@ END;
 */
 
 
---******************* data teste*******************
+-- ******************* dummy data *******************
 
 INSERT INTO BD_CLIENTES
 (PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL, PASSWORD)
@@ -395,19 +400,19 @@ VALUES
 
 
 INSERT INTO BD_VEICULOS
-(IDMODELO, CLIENTES_IDCLIENTE, MARCA, MODELO)
+(IDMARCA, IDMODELO, CLIENTES_IDCLIENTE, MATRICULA, MARCA, MODELO)
 VALUES
-(1, 1, 'Ferrari', '360 Modena');
+(1, 1, 1, '11-22-AA', 'Ferrari', '360 Modena');
 
 INSERT INTO BD_VEICULOS
-(IDMODELO, CLIENTES_IDCLIENTE, MARCA, MODELO)
+(IDMARCA, IDMODELO, CLIENTES_IDCLIENTE, MATRICULA, MARCA, MODELO)
 VALUES
-(2, 2, 'Lamborguini', 'Aventadoro');
+(2, 2, 2, '22-33-BB', 'Lamborguini', 'Aventadoro');
 
 INSERT INTO BD_VEICULOS
-(IDMODELO, CLIENTES_IDCLIENTE, MARCA, MODELO)
+(IDMARCA, IDMODELO, CLIENTES_IDCLIENTE, MATRICULA, MARCA, MODELO)
 VALUES
-(3, 3, 'Bentley', 'Continental');
+(3, 3, 3, '33-44-CC', 'Bentley', 'Continental');
 
 
 INSERT INTO BD_ABASTECIMENTOS
@@ -426,7 +431,8 @@ VALUES
 (68123, 30, 3);
 
 
--- questao das versoes, nao esto ua percebe o porque nos mecanicos
+-- (joao ou vasco) questao das versoes, nao esto ua percebe o porque nos mecanicos
+-- (sandro) o que não estás a perceber em concreto?
 INSERT INTO BD_MECANICOS
 (PRIMEIRONOME, ULTIMONOME, TELEMOVEL, EMAIL, PASSWORD,VERSAO)
 VALUES
