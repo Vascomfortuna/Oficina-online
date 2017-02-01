@@ -51,18 +51,17 @@ create or replace procedure WS_RegistaVeiculo (v_idmarca number, v_idmodelo numb
 
 end;
 
-  GRANT EXECUTE ON WS_RegistaVeiculo to scott;
-
 create or replace procedure WS_VerVeiculos(id_cliente number) is
 
    CURSOR cursor_veiculo IS
-     select MARCA,MODELO,MATRICULA
+     select MARCA,MODELO,MATRICULA,LITROS
      from VeiculosPorClientes
        where CLIENTES_IDCLIENTE = id_cliente;
-
+  
   c_marca VARCHAR2(255);
   c_modelo VARCHAR2(255);
   c_matricula VARCHAR2(255);
+  c_litros VARCHAR2(255);
   resultado CLOB;
   BEGIN
    -- HTP.htmlopen;
@@ -76,8 +75,10 @@ create or replace procedure WS_VerVeiculos(id_cliente number) is
     OPEN cursor_veiculo;
     LOOP
       exit when cursor_veiculo%notfound;
-      FETCH cursor_veiculo INTO c_marca, c_modelo, c_matricula;
-      resultado:=resultado || '{"Marca": "'||c_marca||'", "Modelo": "'||c_modelo||'", "Matrícula":"'||c_matricula||'"},';
+      FETCH cursor_veiculo INTO c_marca, c_modelo, c_matricula,c_litros;
+      resultado:=resultado || '{"Marca": "'||c_marca||'", "Modelo": "'
+                 ||c_modelo||'", "Matricula":"'||c_matricula||
+                 '", "Litros":"'||c_litros||'"},';
     END LOOP;
     CLOSE cursor_veiculo;
     resultado:=substr(resultado,0,length(resultado)-1)||']';
