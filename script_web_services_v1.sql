@@ -105,7 +105,7 @@ create or replace procedure WS_LOGIN (vemail varchar2, vpassword varchar2) is
   resultado varchar2(10000);
   v_hash raw(2000);
   BEGIN
-	v_hash:= MY_CRYPTO_SHA2(vpassword);
+	  v_hash:= MY_CRYPTO_SHA2(vpassword);
     select IDCLIENTE,PRIMEIRONOME,ULTIMONOME
     into c_idcliente,c_pnome,c_unome
     from LOGINCLIENTES
@@ -116,7 +116,7 @@ create or replace procedure WS_LOGIN (vemail varchar2, vpassword varchar2) is
                 ||'", "primeiroNome": "'||c_pnome
                 ||'", "ultimoNome": "'||c_unome
                 ||'", "email": "'||vemail
-                ||'", "password": "'||v_hash
+                ||'", "password": "'||vpassword
                 ||'"}';
     htp.print(resultado);
  EXCEPTION
