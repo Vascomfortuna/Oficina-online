@@ -1,0 +1,1 @@
+audit select on bd_clientes  by access WHENEVER successful;
