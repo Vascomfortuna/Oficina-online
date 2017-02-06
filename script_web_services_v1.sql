@@ -1,4 +1,3 @@
-
   create or replace procedure WS_VerVeiculos(id_cliente number,v_email varchar2,v_password varchar2) is
 
    CURSOR cursor_veiculo IS
@@ -11,9 +10,11 @@
   c_matricula VARCHAR2(255);
   c_litros VARCHAR2(255);
   v_idcliente number;
+  v_hash raw(2000);
   resultado CLOB;
   BEGIN
-	select idCliente into v_idcliente from bd_clientes where email=v_email and password=v_password;
+	v_hash:= MY_CRYPTO_SHA2(v_password);
+	select idCliente into v_idcliente from bd_clientes where email=v_email and password=v_hash;
     resultado:='[';
     OPEN cursor_veiculo;
     LOOP
@@ -34,7 +35,6 @@
 end;
 /
 
-Aviso: Não está a ser utilizada.
 create or replace procedure WS_InsereOcorrencia
   (v_dMarcacao date,
     v_dInicio DATE,
@@ -50,8 +50,10 @@ create or replace procedure WS_InsereOcorrencia
 
     id_cliente number;
     resultado varchar2(10000);
+	v_hash raw(2000);
   BEGIN
-  select idCliente into id_cliente from bd_clientes where email=v_email and password=v_password;
+	v_hash:= MY_CRYPTO_SHA2(v_password);
+	select idCliente into id_cliente from bd_clientes where email=v_email and password=v_hash;
   INSERT INTO BD_OCORRENCIAS
   (DATAMARCACAO,DATAINICIO,KM,PRECOTOTAL,OBSERVACOES_CLIENTE,OBSERVACOES_MECANICO,
   CLIENTES_IDCLIENTE,MECANICOS_IDMECANICO,VEICULOS_IDVEICULO,OCORRENCIAS_IDOCORRENCIAESTADO)
@@ -73,9 +75,10 @@ create or replace procedure WS_RegistaVeiculo (v_idmarca number, v_idmodelo numb
 
   id_cliente number;
   resultado varchar2(10000);
-
+  v_hash raw(2000);	
   BEGIN
-	select idCliente into id_cliente from bd_clientes where email=v_email and password=v_password;
+	v_hash:= MY_CRYPTO_SHA2(v_password);
+	select idCliente into id_cliente from bd_clientes where email=v_email and password=v_hash;
   
     INSERT INTO BD_VEICULOS (IDMARCA,IDMODELO,MARCA,MODELO,MATRICULA,CLIENTES_IDCLIENTE)
       VALUES (v_idmarca,v_idmodelo,v_marca,v_modelo,v_matricula,v_idcliente);
@@ -100,18 +103,20 @@ create or replace procedure WS_LOGIN (vemail varchar2, vpassword varchar2) is
   c_pnome VARCHAR2(255):=NULL;
   c_unome VARCHAR2(255):=NULL;
   resultado varchar2(10000);
+  v_hash raw(2000);
   BEGIN
+	v_hash:= MY_CRYPTO_SHA2(vpassword);
     select IDCLIENTE,PRIMEIRONOME,ULTIMONOME
     into c_idcliente,c_pnome,c_unome
     from LOGINCLIENTES
     where email=vemail
-          and password=vpassword;
+          and password=v_hash;
 
     resultado:='{"idCliente": "'||c_idcliente
                 ||'", "primeiroNome": "'||c_pnome
                 ||'", "ultimoNome": "'||c_unome
                 ||'", "email": "'||vemail
-                ||'", "password": "'||vpassword
+                ||'", "password": "'||v_hash
                 ||'"}';
     htp.print(resultado);
  EXCEPTION
